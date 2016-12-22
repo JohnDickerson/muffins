@@ -27,10 +27,12 @@ class IncrementalInfoCallback(MIPInfoCallback):
         else:
             logging.debug("No incumbent found.")
 
+        # Only print if we've found an improvement over the old best objective value
         if new_incumbent:
             logging.debug("Current best: {0}\t\t{1}".format(inc_obj, Fraction(inc_obj).limit_denominator()))
             self.__print_solution(self.get_incumbent_values(), self.num_muffins, self.num_students)
             logging.debug("\n")
+            
     def __print_solution(self, arr, num_muffins, num_students):
         """ Prints the assignment of students to muffin chunks """
         for s in range(num_students):
@@ -40,7 +42,12 @@ class IncrementalInfoCallback(MIPInfoCallback):
                 if slice_size > 0:
                     slice_map[m] = Fraction(slice_size)
             logging.debug("S{0}, n={1}: {2}".format(s, len(slice_map), ",".join("{0}->{1}".format(_m,_v.limit_denominator()) for _m, _v in slice_map.iteritems())))
-                  
+
+            # Sanity check -- makes sure our guessed Fraction slices add up to Fraction m/s, for every student
+            assert 0 == sum([_v.limit_denominator() for _v in slice_map.values()]) - Fraction(num_muffins, num_students)
+
+            
+            
 def __idx_muffin_sliver(m, s):
     """ Returns index for x_ij givens m muffins, s students """
     def inner_idx(i, j):
