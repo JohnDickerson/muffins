@@ -29,9 +29,18 @@ class IncrementalInfoCallback(MIPInfoCallback):
 
         if new_incumbent:
             logging.debug("Current best: {0}\t\t{1}".format(inc_obj, Fraction(inc_obj).limit_denominator()))
-            logging.debug("New incumbent variable values: {0}".format(self.get_incumbent_values())) 
-
-            
+            self.__print_solution(self.get_incumbent_values(), self.num_muffins, self.num_students)
+            logging.debug("\n")
+    def __print_solution(self, arr, num_muffins, num_students):
+        """ Prints the assignment of students to muffin chunks """
+        for s in range(num_students):
+            slice_map = {}
+            for m in range(num_muffins):
+                slice_size = arr[m*num_students+s]
+                if slice_size > 0:
+                    slice_map[m] = Fraction(slice_size)
+            logging.debug("S{0}, n={1}: {2}".format(s, len(slice_map), ",".join("{0}->{1}".format(_m,_v) for _m, _v in slice_map.iteritems())))
+                  
 def __idx_muffin_sliver(m, s):
     """ Returns index for x_ij givens m muffins, s students """
     def inner_idx(i, j):
@@ -146,6 +155,8 @@ def solve(m, s, verbose=False):
             logging_cb = p.register_callback(IncrementalInfoCallback)
             logging_cb.last_incumbent = 1e+75
             logging_cb.last_log = -1e+75
+            logging_cb.num_muffins = m
+            logging_cb.num_students = s
             # Also send CPLEX's standard incremental output to STDERR
             #p.set_results_stream(sys.stderr)
         
