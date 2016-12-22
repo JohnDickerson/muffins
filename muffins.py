@@ -39,7 +39,7 @@ class IncrementalInfoCallback(MIPInfoCallback):
                 slice_size = arr[m*num_students+s]
                 if slice_size > 0:
                     slice_map[m] = Fraction(slice_size)
-            logging.debug("S{0}, n={1}: {2}".format(s, len(slice_map), ",".join("{0}->{1}".format(_m,_v) for _m, _v in slice_map.iteritems())))
+            logging.debug("S{0}, n={1}: {2}".format(s, len(slice_map), ",".join("{0}->{1}".format(_m,_v.limit_denominator()) for _m, _v in slice_map.iteritems())))
                   
 def __idx_muffin_sliver(m, s):
     """ Returns index for x_ij givens m muffins, s students """
