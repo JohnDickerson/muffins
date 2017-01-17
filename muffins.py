@@ -10,6 +10,7 @@ import time
 import argparse
 import logging
 
+from bounds import upper_bound
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -138,6 +139,16 @@ def __build_muffins(p, m, s):
             senses.append("L")
             rhs.append(0)
 
+    # Add in the floor-ceiling bound and some other upper bounds
+    # from Naveen's codebase
+    loose_upper_bound = float( upper_bound(int(m), int(s)) )
+    logging.debug("Floor-Ceiling UB: {0}".format(Fraction(loose_upper_bound).limit_denominator()))
+    rows.append([ [idx_min_sliver],
+                  [1],
+              ])
+    senses.append("L")
+    rhs.append(loose_upper_bound)
+    
 
     # Constraint matrix is COMPLETELY filled by this point; add to model
     p.linear_constraints.add(lin_expr = rows,
