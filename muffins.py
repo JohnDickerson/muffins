@@ -159,7 +159,7 @@ def __build_muffins(p, m, s):
     stop = time.time()
     return stop-start
             
-def solve(m, s, verbose=False):
+def solve(m, s, timelimit=300.0, verbose=False):
     """ Given m muffins and s students (positive integers), builds an ILP to
     solve the muffin problem, solves it, returns value found """
 
@@ -177,12 +177,16 @@ def solve(m, s, verbose=False):
             logging_cb.num_students = s
             # Also send CPLEX's standard incremental output to STDERR
             #p.set_results_stream(sys.stderr)
-        
-    
+
         # Build the model
         build_s = __build_muffins(p, m, s)
         logging.debug("Model build time: {0}".format(build_s))
 
+        # Set a timeout
+        if timelimit >= 0.0:
+            p.parameters.tuning.timelimit.set(timelimit)
+        logging.debug("Max optimization time: {0} seconds".format(p.parameters.tuning.timelimit.get()))
+            
         # Solve the model
         start = time.time()
         p.solve()
@@ -215,6 +219,8 @@ def main():
                         help="Number of students")
     parser.add_argument("-v", "--verbose", action="store_true", required=False,
                         help="Outputs incremental CPLEX progress to STDERR")
+    parser.add_argument("-t", "--timeout", dest="timeout", required=True, type=int,
+                        help="Maximum optimization time in seconds; negative number means no timeout")
     args = parser.parse_args()
 
     if args.m < 1 or args.s < 1:
@@ -222,7 +228,7 @@ def main():
         sys.exit(-1)
 
     # Divide muffins amongst students
-    opt = solve(args.m, args.s, args.verbose)
+    opt = solve(args.m, args.s, args.timeout, args.verbose)
 
     print("{0},{1},{2},{3}".format(args.m, args.s, opt, Fraction(opt).limit_denominator()))
     
