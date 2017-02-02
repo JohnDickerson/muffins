@@ -6,7 +6,7 @@ def upper_bound(m, s):
 
 	#Reduce m/s
 	if gcd(m,s) != 1:
-		return bounds_old(int(m/gcd(m,s)),int(s/gcd(m,s)))
+		return bounds_old(int(float(m)/gcd(m,s)),int(float(s)/gcd(m,s)))
 		
 	#Dual theorem
 	if(s > m):
@@ -27,7 +27,7 @@ def upper_bound(m, s):
 	b = []
 
 	#Floor ceiling theorem
-	b.append(max(Fraction(1,3),min(Fraction(m,int(s*ceil(2*m/s))),1-Fraction(m,s*int(floor(2*m/s))))))
+	b.append(max(Fraction(1,3),min(Fraction(m,int(s*ceil(2*float(m)/float(s)))),1-Fraction(m,s*int(floor(2*float(m)/float(s)))))))
 	
 	#List of all ANSv for all V
 	al = []
@@ -48,15 +48,20 @@ def upper_bound(m, s):
 		#Compute Q1v
 		
 		#Compute MINONE
-		m11 = Fraction(int(floor(V*sv/sv1))+(V-1-int(floor(V*sv/sv1)))*(V-Fraction(m,s)-1)-Fraction(m,s),int(floor(V*sv/sv1))+(V-2)*(V-1-int(floor(V*sv/sv1))))
-		m12 = Fraction(Fraction(m,s)-(V-1-int(ceil(V*sv/sv1)))*(Fraction(m,s)-V+2)-int(ceil(V*sv/sv1))*(1-Fraction(m,s)),int(ceil(V*sv/sv1))*(V-1)+(V-1-int(ceil(V*sv/sv1)))*(V-2))
+		m11 = Fraction(int(floor(V*float(sv)/float(sv1)))+(V-1-int(floor(V*float(sv)/float(sv1))))*(V-Fraction(m,s)-1)-Fraction(m,s),int(floor(V*float(sv)/float(sv1)))+(V-2)*(V-1-int(floor(V*float(sv)/float(sv1)))))
+		m12 = Fraction(Fraction(m,s)-(V-1-int(ceil(V*float(sv)/float(sv1))))*(Fraction(m,s)-V+2)-int(ceil(V*float(sv)/float(sv1)))*(1-Fraction(m,s)),int(ceil(V*float(sv)/float(sv1)))*(V-1)+(V-1-int(ceil(V*float(sv)/float(sv1))))*(V-2))
 		
 		Q1v = min(m11,m12) if min(m11,m12) < Fraction(Fraction(1,2)-Fraction(m,s)+V-2,V-2) else 1
 		#Compute Q2v
 		
 		#Compute MINTWO
-		m21 = Fraction(Fraction(m,s)-(V-int(floor(((V-1)*sv1)/sv)))*(1-Fraction(m,s)),int(floor(((V-1)*sv1)/sv))+(V-int(floor(((V-1)*sv1)/sv)))*(V-1))
-		m22 = Fraction(int(ceil((V-1)*sv1/sv))*(V-Fraction(m,s)-1)+(V-int(ceil((V-1)*sv1/sv)))*Fraction(m,s)-Fraction(m,s),int(ceil((V-1)*sv1/sv))*(V-2)+(V-int(ceil((V-1)*sv1/sv)))*(V-1))
+		m21 = Fraction(Fraction(m,s)-(V-int(floor(((V-1)*float(sv1))/float(sv))))*(1-Fraction(m,s)),int(floor(((V-1)*float(sv1))/float(sv)))+(V-int(floor(((V-1)*float(sv1))/float(sv))))*(V-1))
+
+                # This denominator is zero for m=18, s=7, V=6 ....
+                print(V)
+                m22_num = int(ceil((V-1)*float(sv1)/float(sv)))*(V-Fraction(m,s)-1)+(V-int(ceil((V-1)*float(sv1)/float(sv))))*Fraction(m,s)-Fraction(m,s)
+                m22_denom = int(ceil((V-1)*float(sv1)/float(sv)))*(V-2) + (V-int(ceil((V-1)*float(sv1)/float(sv))))*(V-1)
+		m22 = Fraction(m22_num,m22_denom)
 		
 		Q2v = min(m21,m22) if min(m21,m22) < Fraction(Fraction(m,s)-Fraction(1,2),V-1) else 1
 		#Compute Q3v
