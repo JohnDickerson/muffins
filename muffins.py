@@ -141,8 +141,9 @@ def __build_muffins(p, m, s):
 
     # Add in the floor-ceiling bound and some other upper bounds
     # from Naveen's codebase
-    loose_upper_bound = float( upper_bound(int(m), int(s)) )
-    logging.debug("Floor-Ceiling UB: {0}".format(Fraction(loose_upper_bound).limit_denominator()))
+    ub = upper_bound(int(m), int(s))
+    loose_upper_bound = float(ub['upper_bound'])
+    logging.debug("{0} UB: {1}".format(ub['bound_type'], Fraction(loose_upper_bound).limit_denominator()))
     rows.append([ [idx_min_sliver],
                   [1],
               ])
@@ -157,7 +158,11 @@ def __build_muffins(p, m, s):
     )
 
     stop = time.time()
-    return stop-start
+    return {
+        'time': stop-start,
+        'bound_type': ub['bound_type'], 
+        'bound': Fraction(loose_upper_bound).limit_denominator(),
+        }
             
 def solve(m, s, timelimit=300.0, verbose=False):
     """ Given m muffins and s students (positive integers), builds an ILP to
@@ -179,7 +184,9 @@ def solve(m, s, timelimit=300.0, verbose=False):
             #p.set_results_stream(sys.stderr)
 
         # Build the model
-        build_s = __build_muffins(p, m, s)
+        build_ret = __build_muffins(p, m, s)
+        build_s = build_ret['time']
+        bound, bound_type = build_ret['bound'], build_ret['bound_type']
         logging.debug("Model build time: {0}".format(build_s))
 
         # Set a timeout
@@ -202,7 +209,7 @@ def solve(m, s, timelimit=300.0, verbose=False):
             feasible = False
 
         opt = sol.get_objective_value()
-        return opt
+        return (opt, bound, bound_type)
     
     except CplexError as ex:
         logging.critical(ex)
@@ -228,9 +235,9 @@ def main():
         sys.exit(-1)
 
     # Divide muffins amongst students
-    opt = solve(args.m, args.s, args.timeout, args.verbose)
+    opt, bound, bound_type = solve(args.m, args.s, args.timeout, args.verbose)
 
-    print("{0},{1},{2},{3}".format(args.m, args.s, opt, Fraction(opt).limit_denominator()))
+    print("{0},{1},{2},{3},{4},{5}".format(args.m, args.s, opt, Fraction(opt).limit_denominator(), bound_type, bound))
     
 if __name__ == '__main__':
     main()
