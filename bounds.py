@@ -35,9 +35,10 @@ def upper_bound(m, s):
 
 	#Floor ceiling theorem
 	b.append( (
-                max(Fraction(1,3),min(Fraction(m,int(s*ceil(2*float(m)/float(s)))),1-Fraction(m,s*int(floor(2*float(m)/float(s))))))),
+                max(Fraction(1,3),min(Fraction(m,int(s*ceil(2*float(m)/float(s)))),1-Fraction(m,s*int(floor(2*float(m)/float(s)))))),
                   "Floor-Ceiling"
-                  ))
+                ) )
+                  
 	
 	#List of all ANSv for all V
 	al = []
@@ -65,7 +66,7 @@ def upper_bound(m, s):
 		#Compute Q2v
 		
 		#Compute MINTWO
-                m21_num = Fraction(m,s) - (V-int(floor(((V-1)*float(sv1))/float(sv)))) * (1-Fraction(m,s)))
+                m21_num = Fraction(m,s) - (V-int(floor(((V-1)*float(sv1))/float(sv)))) * (1-Fraction(m,s))
                 m21_denom = int(floor(((V-1)*float(sv1))/float(sv))) + (V-int(floor(((V-1)*float(sv1))/float(sv)))) * (V-1)
                 if m21_denom != 0:
                         m21 = Fraction(m21_num,m21_denom)
@@ -74,7 +75,7 @@ def upper_bound(m, s):
 
                 m22_num = int(ceil((V-1)*float(sv1)/float(sv)))*(V-Fraction(m,s)-1)+(V-int(ceil((V-1)*float(sv1)/float(sv))))*Fraction(m,s)-Fraction(m,s)
                 m22_denom = int(ceil((V-1)*float(sv1)/float(sv)))*(V-2) + (V-int(ceil((V-1)*float(sv1)/float(sv))))*(V-1)
-                if m22_denomm != 0:
+                if m22_denom != 0:
                         m22 = Fraction(m22_num,m22_denom)
 		else:
                         m22 = Fraction(1,1)   # Loosest upper bound = 1.0
@@ -108,4 +109,4 @@ def upper_bound(m, s):
                         ))
 
         # Return the tuple with the lowest upper bound
-	return ret_info( min(b, key = lambda x: x[0]) )
+	return ret_info( *min(b, key = lambda x: x[0]) )

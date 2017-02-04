@@ -142,6 +142,7 @@ def __build_muffins(p, m, s):
     # Add in the floor-ceiling bound and some other upper bounds
     # from Naveen's codebase
     ub = upper_bound(int(m), int(s))
+    print ub
     loose_upper_bound = float(ub['upper_bound'])
     logging.debug("{0} UB: {1}".format(ub['bound_type'], Fraction(loose_upper_bound).limit_denominator()))
     rows.append([ [idx_min_sliver],
@@ -191,8 +192,11 @@ def solve(m, s, timelimit=300.0, verbose=False):
 
         # Set a timeout
         if timelimit >= 0.0:
-            p.parameters.tuning.timelimit.set(timelimit)
-        logging.debug("Max optimization time: {0} seconds".format(p.parameters.tuning.timelimit.get()))
+            #try:
+             #   p.parameters.tuning.timelimit.set(timelimit)
+            #except AttributeError:
+            p.parameters.timelimit.set(timelimit)
+        #logging.debug("Max optimization time: {0} seconds".format(p.parameters.tuning.timelimit.get()))
             
         # Solve the model
         start = time.time()
