@@ -208,12 +208,14 @@ def solve(m, s, timelimit=300.0, verbose=False):
         # Basic analytics
         sol = p.solution
 
-        feasible = True
+        feasible = True; is_opt = False
         if sol.get_status() == 3 or sol.get_status() == 103:
             feasible = False
+        if sol.get_status() == 1 or sol.get_status() == 101:
+            is_opt = True
 
         opt = sol.get_objective_value()
-        return (opt, bound, bound_type)
+        return (opt, bound, bound_type, is_opt, solve_s)
     
     except CplexError as ex:
         logging.critical(ex)
@@ -239,9 +241,9 @@ def main():
         sys.exit(-1)
 
     # Divide muffins amongst students
-    opt, bound, bound_type = solve(args.m, args.s, args.timeout, args.verbose)
+    opt, bound, bound_type, is_opt, solve_s = solve(args.m, args.s, args.timeout, args.verbose)
 
-    print("{0},{1},{2},{3},{4},{5}".format(args.m, args.s, opt, Fraction(opt).limit_denominator(), bound_type, bound))
+    print("{0},{1},{2},{3},{4},{5},{6}".format(args.m, args.s, opt, Fraction(opt).limit_denominator(), bound_type, bound, is_opt, solve_s))
     
 if __name__ == '__main__':
     main()
